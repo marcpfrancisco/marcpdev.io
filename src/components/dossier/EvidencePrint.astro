@@ -1,0 +1,50 @@
+---
+/**
+ * An evidence print: a real object, so it gets object styling. Bone frame (the print's
+ * border), the cobalt evidence tag overlapping its corner, and a caption. Image is a labelled
+ * placeholder until the real screenshot exists.
+ */
+import type { Placeholder } from '../../lib/placeholder';
+
+interface Props {
+  image: Placeholder;
+  alt: string;
+  code: string;
+  title: string;
+  note: string;
+  href?: string;
+  /** Above the fold only (e.g. never on the home register). */
+  eager?: boolean;
+}
+
+const { image, alt, code, title, note, href, eager = false } = Astro.props;
+const Tag = href ? 'a' : 'div';
+---
+
+<figure class="grid gap-sm">
+  <Tag
+    href={href}
+    class:list={[
+      'relative block bg-sheet p-xs',
+      href &&
+        'transition-transform duration-(--dur-short) ease-out hover:-translate-y-0.5 active:translate-y-0',
+    ]}
+  >
+    <img
+      src={image.src}
+      width={image.width}
+      height={image.height}
+      alt={alt}
+      loading={eager ? 'eager' : 'lazy'}
+      decoding="async"
+      class="aspect-8/5 w-full bg-paper-3 object-cover"
+    />
+    <span class="file-mono absolute -top-sm left-md bg-accent px-sm py-2xs text-xs text-accent-ink">
+      {code}
+    </span>
+  </Tag>
+  <figcaption class="flex flex-wrap items-baseline gap-x-sm">
+    <span class="text-md text-ink">{title}</span>
+    <span class="text-xs text-muted">{note}</span>
+  </figcaption>
+</figure>

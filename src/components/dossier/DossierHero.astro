@@ -1,0 +1,96 @@
+---
+/**
+ * Page 01 of the dossier: the subject's file card. Left-set, never centred. Rendered inside
+ * the page's intro <section> together with FileStrip (its running head).
+ * Subject and role open under redaction bars (manual: the intro scene reveals them).
+ */
+import { person } from '../../data/site';
+import { placeholder } from '../../lib/placeholder';
+import Icon from '../Icon.astro';
+import ButtonLink from '../ui/ButtonLink.astro';
+import Stamp from './Stamp.astro';
+
+interface Props {
+  reviewed: Date;
+}
+
+const { reviewed } = Astro.props;
+
+/** R-23: a labelled placeholder until Marc supplies a portrait. */
+const portrait = placeholder(480, 600);
+
+const fields = [
+  { label: 'Role', value: person.roleLine, redact: true },
+  { label: 'Base', value: person.base, redact: false },
+  { label: 'Status', value: person.status, redact: false },
+] as const;
+---
+
+<div class="container-page grid min-h-[calc(100dvh-var(--header-h)-3.25rem)] grid-rows-[1fr_auto] gap-2xl pt-2xl pb-xl lg:pt-3xl">
+  <div class="grid content-start gap-xl lg:grid-cols-12 lg:gap-(--gap-columns)">
+    <div class="grid gap-lg lg:col-span-8">
+      <dl class="grid gap-lg">
+        <div class="grid gap-xs md:grid-cols-[8rem_minmax(0,1fr)] md:items-baseline md:gap-lg">
+          <dt class="file-mono text-muted">Subject</dt>
+          <dd class="min-w-0">
+            <h1 id="subject-name" class="text-display tracking-display text-ink max-w-none">
+              <span data-redact="manual" class="inline-block">
+                {person.name}
+              </span>
+            </h1>
+          </dd>
+        </div>
+
+        {fields.map((field) => (
+          <div class="grid gap-2xs border-t border-rule pt-md md:grid-cols-[8rem_minmax(0,1fr)] md:items-baseline md:gap-lg">
+            <dt class="file-mono text-muted">{field.label}</dt>
+            <dd class="min-w-0 text-lg text-ink">
+              {field.redact ? (
+                <span data-redact="manual" class="inline-block">
+                  {field.value}
+                </span>
+              ) : (
+                field.value
+              )}
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      <div class="grid gap-lg border-t border-rule pt-xl md:grid-cols-[8rem_minmax(0,1fr)] md:gap-lg">
+        <span aria-hidden="true" class="hidden md:block"></span>
+        <div class="grid gap-lg">
+          <p class="max-w-[34ch] text-lead text-ink-2">{person.tagline}</p>
+          <div class="flex flex-wrap gap-md">
+            <ButtonLink href="#exhibit-a" variant="primary">
+              Open the file
+            </ButtonLink>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <figure class="w-full max-w-64 justify-self-start lg:col-span-4 lg:max-w-none">
+      <div class="relative">
+        <img
+          src={portrait.src}
+          width={portrait.width}
+          height={portrait.height}
+          alt="Placeholder for Marc Francisco's portrait"
+          fetchpriority="high"
+          decoding="async"
+          class="aspect-4/5 w-full bg-paper-3 object-cover"
+        />
+        <Stamp date={reviewed} class="absolute bottom-lg left-xs sm:-left-lg" />
+      </div>
+      <figcaption class="file-mono mt-xs text-xs text-muted">Photograph, placeholder</figcaption>
+    </figure>
+  </div>
+
+  <div class="flex justify-end">
+    <p class="hidden items-center gap-xs text-sm text-muted md:flex" aria-hidden="true">
+      <Icon name="arrow-down" class="text-xs" />
+      Scroll to declassify
+    </p>
+  </div>
+</div>

@@ -1,0 +1,105 @@
+---
+/**
+ * The dossier's close: a routing slip on the dark raised band, with cobalt only as a 2px top
+ * rule, the rail marker and small signals (no solid colour field: Marc found it harsh).
+ * Same grid as every exhibit: rail cols 1-3, content cols 4-12.
+ * The email is never in the HTML as a string: src/scripts/contact.ts assembles it from data
+ * attributes on click. Without JS, the button is hidden and LinkedIn is the route.
+ */
+import { emailParts, person, resume, socials } from '../../data/site';
+import { publicFileExists } from '../../lib/public-file';
+import Icon from '../Icon.astro';
+
+/** Only a phone-free copy is ever linked, and only once it exists in /public. */
+const resumeReady = publicFileExists(resume.file);
+
+const rowLink =
+  'group/link flex min-h-12 flex-1 items-center justify-between gap-lg text-ink no-underline';
+const rowLabel = 'file-mono w-28 shrink-0 text-muted';
+---
+
+<section
+  id="contact"
+  tabindex="-1"
+  aria-labelledby="contact-title"
+  class="border-t-2 border-accent bg-paper-2 py-(--section-pad) outline-none"
+>
+  <div class="container-page grid gap-xl lg:grid-cols-12 lg:gap-(--gap-columns)">
+    <div class="lg:col-span-3">
+      <div class="flex items-baseline gap-md border-b border-rule pb-sm lg:flex-col lg:items-start lg:gap-xs lg:border-b-0 lg:pb-0">
+        <span aria-hidden="true" class="font-display text-section leading-none text-accent">
+          &sect;
+        </span>
+        <p class="file-mono flex flex-wrap gap-x-sm text-muted lg:flex-col">
+          <span class="whitespace-nowrap">Closing</span>
+          <span class="whitespace-nowrap text-ink-2">Request access</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="grid min-w-0 content-start gap-2xl lg:col-span-9">
+      <div class="grid gap-lg xl:grid-cols-9 xl:items-end xl:gap-(--gap-columns)">
+        <h2 id="contact-title" class="text-display-s tracking-display text-ink xl:col-span-5">
+          Request the full file.
+        </h2>
+        <p class="max-w-[40ch] text-lead text-ink-2 xl:col-span-4">
+          Open to application security and SOC roles, in Dubai or worldwide.
+        </p>
+      </div>
+
+      <ul class="grid border-t border-rule-strong" aria-label="Contact routes">
+        <li class="flex flex-wrap items-center gap-x-lg border-b border-rule py-xs">
+          <span class={rowLabel}>Email</span>
+          <div data-email-slot class="flex min-h-12 flex-1 flex-wrap items-center gap-lg">
+            <button
+              type="button"
+              data-email-reveal
+              data-u={emailParts.user}
+              data-d={emailParts.domain}
+              class="hidden min-h-11 items-center gap-xs border border-accent whitespace-nowrap px-md text-md text-ink transition-colors duration-(--dur-short) ease-out hover:bg-accent hover:text-accent-ink active:bg-paper-3 active:text-ink active:duration-(--dur-micro) [@media(scripting:enabled)]:inline-flex"
+            >
+              <Icon name="envelope" />
+              Show email
+            </button>
+            <p class="text-md text-ink-2 [@media(scripting:enabled)]:hidden">
+              Shown with JavaScript on; meanwhile, use LinkedIn below.
+            </p>
+          </div>
+        </li>
+        {socials.map((social) => (
+          <li class="flex flex-wrap items-center gap-x-lg border-b border-rule">
+            <span class={rowLabel}>{social.label}</span>
+            <a href={social.href} rel="noopener noreferrer me" target="_blank" class={rowLink}>
+              <span class="inline-flex items-center gap-sm transition-transform duration-(--dur-short) ease-out group-hover/link:translate-x-1 group-active/link:translate-x-0">
+                <Icon
+                  name={social.icon}
+                  class="text-muted transition-colors duration-(--dur-short) group-hover/link:text-accent"
+                />
+                {social.handle}
+              </span>
+              <Icon name="external" class="text-xs text-muted" />
+              <span class="visually-hidden">(opens in a new tab)</span>
+            </a>
+          </li>
+        ))}
+        {resumeReady && (
+          <li class="flex flex-wrap items-center gap-x-lg border-b border-rule">
+            <span class={rowLabel}>Resume</span>
+            <a href={resume.file} download class={rowLink}>
+              <span class="inline-flex items-center gap-sm">
+                <Icon name="resume" class="text-muted" />
+                {resume.label}
+              </span>
+              <span class="file-mono text-xs text-muted">PDF</span>
+            </a>
+          </li>
+        )}
+      </ul>
+
+      <p class="flex flex-wrap items-baseline gap-x-lg gap-y-2xs border-t-2 border-accent pt-md sm:w-fit">
+        <span class="font-display text-title text-ink">{person.name}</span>
+        <span class="file-mono text-muted">Filed in {person.base}</span>
+      </p>
+    </div>
+  </div>
+</section>

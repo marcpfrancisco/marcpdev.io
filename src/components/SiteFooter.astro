@@ -1,0 +1,16 @@
+---
+/**
+ * The file's last line. Name, links and contact live in the dossier's closing section
+ * (ContactClose) and the header action, so the footer only ends the file.
+ */
+import { person } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-rule">
+  <div class="container-page flex flex-wrap items-baseline justify-between gap-x-lg gap-y-xs py-lg">
+    <p class="file-mono text-muted">End of file {person.fileNo}</p>
+    <p class="text-xs text-muted">{`${String(year)} ${person.name}. Built with Astro.`}</p>
+  </div>
+</footer>

@@ -1,0 +1,96 @@
+---
+/**
+ * Exhibit E: capabilities as a filed table on the content columns.
+ * Each discipline cites where on the file it is evidenced (group level, never tool level).
+ * Skill lines declassify by line; a real table on wide screens, labelled blocks on phones.
+ */
+import { skills } from '../../data/site';
+import Section from './Section.astro';
+
+interface Props {
+  page: number;
+  pages: number;
+}
+
+const { page, pages } = Astro.props;
+
+/** Tools shown per discipline before the disclosure; the full list is one click away. */
+const LEAD_ITEMS = 5;
+---
+
+<Section
+  id="exhibit-e"
+  labelledBy="exhibit-e-title"
+  tone="base"
+  letter="E"
+  name="Capabilities"
+  page={page}
+  pages={pages}
+>
+  <h2 id="exhibit-e-title" class="text-display-s tracking-display text-ink">
+    <span data-redact class="inline-block">
+      Capabilities on record.
+    </span>
+  </h2>
+
+  <table class="w-full border-collapse text-start">
+    <caption class="visually-hidden">
+      Skills by discipline: each row names a discipline, its tools and practices, and where on this
+      file it is evidenced
+    </caption>
+    <thead class="hidden lg:table-header-group">
+      <tr>
+        <th scope="col" class="pb-sm text-start font-normal">
+          <span class="visually-hidden">Discipline</span>
+        </th>
+        <th scope="col" class="pb-sm text-start font-normal">
+          <span class="visually-hidden">Tools and practices</span>
+        </th>
+        <th scope="col" class="file-mono pb-sm text-start font-normal text-muted">
+          On file
+        </th>
+      </tr>
+    </thead>
+    <tbody class="border-t border-rule-strong">
+      {skills.map((group) => (
+        <tr class="grid gap-xs border-b border-rule py-lg lg:table-row lg:py-0">
+          <th
+            scope="row"
+            class="text-start align-top font-display text-title font-normal text-ink lg:w-[16rem] lg:py-2xl lg:pe-lg"
+          >
+            {group.name}
+          </th>
+          <td class="align-top text-md text-ink-2 lg:py-2xl lg:pe-lg">
+            <p data-redact-lines class="max-w-[52ch]">
+              {group.items.slice(0, LEAD_ITEMS).join(', ')}
+            </p>
+            {group.items.length > LEAD_ITEMS && (
+              <details class="group/more mt-xs">
+                <summary class="inline-flex min-h-11 cursor-pointer list-none items-center gap-xs text-sm text-ink-2 underline decoration-rule-strong underline-offset-4 transition-colors duration-(--dur-short) hover:text-ink hover:decoration-accent active:text-accent [&::-webkit-details-marker]:hidden">
+                  <span class="group-open/more:hidden">{group.items.length - LEAD_ITEMS} more</span>
+                  <span class="hidden group-open/more:inline">Show fewer</span>
+                </summary>
+                <p class="max-w-[52ch] pt-xs">{group.items.slice(LEAD_ITEMS).join(', ')}</p>
+              </details>
+            )}
+          </td>
+          <td class="align-top lg:w-[13rem] lg:py-2xl">
+            <span class="file-mono block text-muted lg:hidden">On file</span>
+            <ul class="grid gap-2xs">
+              {group.sources.map((source) => (
+                <li>
+                  <a
+                    href={source.href}
+                    class="inline-flex min-h-11 items-center text-sm text-ink-2 underline decoration-rule-strong underline-offset-4 transition-colors duration-(--dur-short) hover:text-ink hover:decoration-accent active:text-accent"
+                  >
+                    {source.note}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Section>

@@ -102,3 +102,9 @@ graphify-out/*
 # ---------------------------------------------------------------
 tmp/
 *.tmp
+
+# Hallmark design-lint screenshots (regenerated on every sweep)
+.hallmark/shots/
+
+# Private originals that must never ship or be committed (e.g. resumes with a phone number)
+private/

@@ -1,16 +1,35 @@
 ---
+import ContactClose from '../components/dossier/ContactClose.astro';
+import DossierHero from '../components/dossier/DossierHero.astro';
+import ExhibitCapabilities from '../components/dossier/ExhibitCapabilities.astro';
+import ExhibitEvidence from '../components/dossier/ExhibitEvidence.astro';
+import ExhibitHistory from '../components/dossier/ExhibitHistory.astro';
+import ExhibitProfile from '../components/dossier/ExhibitProfile.astro';
+import ExhibitTraining from '../components/dossier/ExhibitTraining.astro';
+import FileStrip from '../components/dossier/FileStrip.astro';
+import { person } from '../data/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+/** The file's review date is the build date. */
+const reviewed = new Date();
+const PAGES = 6;
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Astro</title>
-  </head>
-  <body>
-    <h1>Astro</h1>
-  </body>
-</html>
+<BaseLayout title={person.name} description={person.summary}>
+  <section data-scene="intro" aria-labelledby="subject-name">
+    <FileStrip fileNo={person.fileNo} reviewed={reviewed} page={1} pages={PAGES} typed />
+    <DossierHero reviewed={reviewed} />
+  </section>
+  <ExhibitProfile page={2} pages={PAGES} />
+  <ExhibitHistory page={3} pages={PAGES} />
+  <ExhibitEvidence page={4} pages={PAGES} />
+  <ExhibitTraining page={5} pages={PAGES} />
+  <ExhibitCapabilities page={6} pages={PAGES} />
+  <ContactClose />
+</BaseLayout>
+
+<script>
+  import '../scripts/motion/scenes/intro';
+  import '../scripts/motion/scenes/timeline';
+  import '../scripts/contact';
+</script>

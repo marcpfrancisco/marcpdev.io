@@ -1,0 +1,72 @@
+---
+/**
+ * A certificate: a real paper object, so it is drawn as one. Bone sheet with black ink, a
+ * folded top-right corner (the band colour over the paper's underside) that marks it as paper, a deep-cobalt state mark (cobalt on
+ * bone needs the deep tone for contrast), date, certificate number and the PDF when it ships.
+ * An open path renders as an outline only: the paper does not exist yet.
+ */
+import type { TrainingItem } from '../../data/site';
+import { fileDateFromIso } from '../../lib/format';
+import { publicFileExists } from '../../lib/public-file';
+
+interface Props {
+  item: TrainingItem;
+}
+
+const { item } = Astro.props;
+const cert = item.certificate;
+const pdf = cert && publicFileExists(cert.file) ? cert.file : null;
+const complete = item.state === 'complete';
+---
+
+{complete ? (
+  <article class="relative grid content-between gap-lg bg-sheet p-lg text-sheet-ink [--color-focus:var(--color-accent-deep)]">
+    <span
+      aria-hidden="true"
+      class="absolute top-0 right-0 size-6 bg-[linear-gradient(225deg,var(--band,var(--color-paper))_50%,var(--color-sheet-muted)_50%)]"
+    />
+    <div class="grid gap-2xs">
+      <h4 class="font-display text-title leading-tight">{item.name}</h4>
+      <p class="file-mono text-xs text-sheet-muted">{item.provider}</p>
+    </div>
+    <dl class="grid gap-2xs text-sm">
+      <div class="flex items-baseline gap-sm">
+        <dt class="file-mono text-xs text-sheet-muted">Status</dt>
+        <dd class="font-semibold text-accent-deep">Complete</dd>
+      </div>
+      {cert && (
+        <div class="flex items-baseline gap-sm">
+          <dt class="file-mono text-xs text-sheet-muted">Issued</dt>
+          <dd>
+            <time datetime={cert.issued}>{fileDateFromIso(cert.issued)}</time>
+          </dd>
+        </div>
+      )}
+      {cert?.id && (
+        <div class="flex items-baseline gap-sm">
+          <dt class="file-mono text-xs text-sheet-muted">No.</dt>
+          <dd class="file-mono text-xs">{cert.id}</dd>
+        </div>
+      )}
+    </dl>
+    {pdf && (
+      <a
+        href={pdf}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex min-h-11 items-center self-end text-sm font-semibold text-sheet-ink underline decoration-accent-deep decoration-2 underline-offset-4 transition-colors duration-(--dur-short) hover:text-accent-deep active:text-sheet-muted"
+      >
+        View certificate
+        <span class="visually-hidden">(PDF) for {item.name}, opens in a new tab</span>
+      </a>
+    )}
+  </article>
+) : (
+  <article class="grid content-between gap-lg border border-dashed border-rule-strong p-lg">
+    <div class="grid gap-2xs">
+      <h4 class="font-display text-title leading-tight text-ink">{item.name}</h4>
+      <p class="file-mono text-xs text-muted">{item.provider}</p>
+    </div>
+    <p class="text-sm text-ink-2">In progress, no certificate yet</p>
+  </article>
+)}

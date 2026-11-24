@@ -1,0 +1,58 @@
+---
+/**
+ * The file's running head: number, clearance, review date and folio, as separate cells
+ * (never a dot-joined string). Mono, because these are the file's own markings.
+ */
+import { fileDate, pad2 as pad } from '../../lib/format';
+
+interface Props {
+  fileNo: string;
+  reviewed: Date;
+  page?: number;
+  pages?: number;
+  /** Home only: the intro scene types the file number in. */
+  typed?: boolean;
+  /** Replaces the folio cell, e.g. "Evidence index" on inner pages. */
+  section?: string;
+}
+
+const { fileNo, reviewed, page, pages, typed = false, section } = Astro.props;
+const reviewedLabel = fileDate(reviewed);
+---
+
+<div class="border-b border-rule">
+  <dl class="container-page flex flex-wrap items-center gap-x-lg gap-y-2xs py-sm text-muted sm:gap-x-xl">
+    <div class="flex gap-xs whitespace-nowrap">
+      <dt class="file-mono">File no.</dt>
+      <dd class="file-mono text-ink-2">
+        <span data-intro={typed ? 'type' : undefined}>{fileNo}</span>
+      </dd>
+    </div>
+    <div class="flex gap-xs whitespace-nowrap">
+      <dt class="file-mono">Clearance</dt>
+      <dd class="file-mono text-ink-2">public</dd>
+    </div>
+    <div class="flex gap-xs whitespace-nowrap">
+      <dt class="file-mono">Reviewed</dt>
+      <dd class="file-mono text-ink-2">
+        <time datetime={reviewed.toISOString().slice(0, 10)}>{reviewedLabel}</time>
+      </dd>
+    </div>
+    {section ? (
+      <div class="flex gap-xs whitespace-nowrap sm:ms-auto">
+        <dt class="visually-hidden">Section</dt>
+        <dd class="file-mono text-ink-2">{section}</dd>
+      </div>
+    ) : (
+      page !== undefined &&
+      pages !== undefined && (
+        <div class="flex gap-xs whitespace-nowrap sm:ms-auto">
+          <dt class="visually-hidden">Page</dt>
+          <dd class="file-mono">
+            p. {pad(page)} of {pad(pages)}
+          </dd>
+        </div>
+      )
+    )}
+  </dl>
+</div>

@@ -1,0 +1,47 @@
+---
+/**
+ * One row of the evidence register: code, title (declassified on entry), summary, stack,
+ * year and state, linking to the project's case file. Used by Exhibit C and /projects.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { evidenceCode, PROJECT_STATE_LABEL } from '../../lib/content';
+import Redacted from './Redacted.astro';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  /** Home register: title only, the summary lives on the case file. */
+  compact?: boolean;
+}
+
+const { project, compact = false } = Astro.props;
+---
+
+<li class="border-b border-rule">
+  <a
+    href={`/projects/${project.id}`}
+    class="group/row grid gap-xs py-md no-underline transition-colors duration-(--dur-short) ease-out hover:bg-paper-3 active:bg-paper lg:grid-cols-[6rem_minmax(0,1fr)_minmax(0,13rem)_4rem_6rem] lg:items-baseline lg:gap-lg lg:px-sm"
+  >
+    <span class="file-mono text-muted transition-colors duration-(--dur-short) group-hover/row:text-ink">
+      {evidenceCode(project.data.order)}
+    </span>
+    <span class="grid gap-2xs">
+      <span class="font-display text-title text-ink">
+        <span data-redact class="inline-block">
+          {project.data.title}
+        </span>
+      </span>
+      {!compact && <span class="text-sm text-ink-2">{project.data.summary}</span>}
+      {project.data.state === 'private' && (
+        <span class="flex items-baseline gap-sm text-sm text-muted">
+          <span class="file-mono text-xs">Systems</span>
+          <Redacted label="employer systems withheld" />
+        </span>
+      )}
+    </span>
+    <span class="file-mono text-xs text-muted">{project.data.stack.join(', ')}</span>
+    <span class="flex items-baseline gap-lg lg:contents">
+      <span class="file-mono text-muted">{project.data.year}</span>
+      <span class="text-sm text-ink-2 lg:text-end">{PROJECT_STATE_LABEL[project.data.state]}</span>
+    </span>
+  </a>
+</li>

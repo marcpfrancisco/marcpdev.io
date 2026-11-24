@@ -1,0 +1,60 @@
+---
+import displayFont from '@fontsource-variable/libre-bodoni/files/libre-bodoni-latin-wght-normal.woff2?url';
+import '../styles/global.css';
+import SiteFooter from '../components/SiteFooter.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import { person } from '../data/site';
+
+interface Props {
+  /** Page title in the page's own words; the name is appended. */
+  title: string;
+  /** One sentence for search results and link previews. */
+  description: string;
+  /** Set false for pages that must not be indexed (e.g. drafts in dev). */
+  index?: boolean;
+}
+
+const { title, description, index = true } = Astro.props;
+const fullTitle = title === person.name ? title : `${title} | ${person.name}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {!index && <meta name="robots" content="noindex, nofollow" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={person.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+
+    <!-- The h1 and the motion boot (document.fonts.ready) both wait on the display face. -->
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">
+      Skip to content
+    </a>
+    <SiteHeader />
+    <main id="main" tabindex="-1" class="outline-none">
+      <slot />
+    </main>
+    <SiteFooter />
+    <script>
+      import '../scripts/nav';
+      import '../scripts/motion/index';
+    </script>
+  </body>
+</html>

@@ -1,1 +1,387 @@
+/* Hallmark · shape: declassified dossier · genre: editorial · theme: custom · job: hire · idea: "Marc's career as a case file the visitor declassifies by scrolling" · vibe: "classified archive, quiet luxury, exact, after hours"
+ * paper: oklch(16% 0.004 286) soft black · complement: oklch(92.6% 0.023 87) bone · accent: oklch(62.4% 0.202 266) cobalt (Marc chose black, bone and cobalt) · display: Libre Bodoni · body: Poppins (by request; Hallmark lists it as a default face, kept because the owner asked) · hero: left-set file fields beside a portrait slot, the cobalt stamp on its corner · nav: edge-aligned wordmark, built routes, one action · footer: one end-of-file line · imagery: placeholders for portrait and live-demo screenshots (owner supplies) · signature: the name declassified from under a bar
+ * axes: dark/high-contrast-serif/chromatic-blue · posture: full palette (black field, bone ink and paper objects, cobalt signal incl. the closing band) · contrast: pass · fold: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 · weakest: imagery (placeholders until real screenshots and portrait) · layout: one 12-col grid with a sticky exhibit rail; full-bleed bands, no boxed cards; objects only for real things (prints, certificates, stamp) */
+/* Hallmark · answered: F8 (two scroll patterns: the Exhibit A head scrub and the Exhibit B route; the user asked for motion-path animation explicitly; both are structural, linear, desktop/tablet only, with a static end state) */
+/* Hallmark · answered: 64 (mono is the dossier's material: file numbers, dates, evidence codes only) */
+/* Hallmark · answered: body face is Poppins at the owner's explicit request (banned-as-default list); display stays Libre Bodoni */
+/* Hallmark · waive 1 · .prose-file > h3 and all body text use --font-body (Poppins) · the owner asked for Poppins by name; display heads stay Libre Bodoni */
+
 @import 'tailwindcss';
+@import './tokens.css';
+
+@import '@fontsource-variable/libre-bodoni';
+@import '@fontsource/poppins/400.css';
+@import '@fontsource/poppins/500.css';
+@import '@fontsource/poppins/600.css';
+@import '@fontsource-variable/geist-mono';
+@import 'lenis/dist/lenis.css';
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    /* Set everywhere so colour transitions (transition-colors) never animate the focus ring in. */
+    outline-color: var(--color-focus);
+  }
+
+  /* clip, not hidden: hidden breaks position: sticky on the header. */
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  html {
+    scrollbar-color: var(--color-rule-strong) var(--color-paper);
+    scroll-padding-top: calc(var(--header-h) + var(--spacing-xl));
+    text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: var(--text-md);
+    line-height: 1.6;
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    caret-color: var(--color-accent);
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-accent) 28%, transparent);
+    color: var(--color-ink);
+  }
+
+  /* Focus ring appears instantly, never animated. */
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
+    transition: none;
+  }
+
+  a {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+
+  /* Prose links (Markdown/MDX): hover raises the underline to the accent, press inks it. */
+  a:not([class]) {
+    text-decoration-color: var(--color-rule-strong);
+    transition: text-decoration-color var(--dur-short) var(--ease-out);
+  }
+
+  a:not([class]):hover {
+    text-decoration-color: var(--color-accent);
+  }
+
+  a:not([class]):active {
+    color: var(--color-accent);
+    transition-duration: var(--dur-micro);
+  }
+
+  /* Display heads never overflow their grid track. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    overflow-wrap: break-word;
+    min-width: 0;
+    text-wrap: balance;
+  }
+
+  h1 {
+    max-width: 20ch;
+  }
+
+  h2 {
+    max-width: 30ch;
+  }
+
+  h3 {
+    max-width: 40ch;
+  }
+
+  p {
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  p:not([class]) {
+    max-width: 65ch;
+  }
+
+  img,
+  video,
+  svg {
+    display: block;
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  /* Disabled: opacity + cursor + the native attribute together. */
+  :disabled,
+  [aria-disabled='true'] {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  time,
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* Capped, centred page container: at 1920 the gutters grow, not the measure. */
+  .container-page {
+    width: 100%;
+    max-width: var(--container-page);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Skip link: hidden until focused. */
+  .skip-link {
+    position: absolute;
+    inset-inline-start: var(--gutter);
+    top: var(--spacing-xs);
+    z-index: var(--z-tooltip);
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--color-ink);
+    color: var(--color-paper);
+    transform: translateY(-200%);
+  }
+
+  .skip-link:focus-visible {
+    transform: none;
+  }
+
+  /* Case notes and writeups rendered from Markdown/MDX. */
+  .prose-file {
+    display: grid;
+    gap: var(--spacing-md);
+    max-width: var(--container-prose);
+    color: var(--color-ink-2);
+    font-size: var(--text-lg);
+    line-height: 1.65;
+  }
+
+  .prose-file > h2 {
+    margin-top: var(--spacing-xl);
+    color: var(--color-ink);
+    font-size: var(--text-title);
+    line-height: 1.2;
+  }
+
+  .prose-file > h3 {
+    margin-top: var(--spacing-lg);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: var(--text-lg);
+    font-weight: 600;
+  }
+
+  .prose-file ul,
+  .prose-file ol {
+    display: grid;
+    gap: var(--spacing-xs);
+    padding-inline-start: 1.25em;
+  }
+
+  .prose-file ul {
+    list-style: square;
+  }
+
+  .prose-file li::marker {
+    color: var(--color-muted);
+  }
+
+  .prose-file code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--color-ink);
+  }
+
+  .prose-file pre {
+    overflow-x: auto;
+    padding: var(--spacing-md);
+    background: var(--color-paper-3);
+    font-size: var(--text-sm);
+  }
+
+  /* Dossier material: file numbers, dates, evidence codes. Never for labels or nav. */
+  .file-mono {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+  }
+}
+
+/*
+ * Redaction bars (Declassified Dossier). Overlays only: the text underneath is always in
+ * the DOM and never moves. Bars exist only when scripting is on AND motion is allowed;
+ * no-JS, reduced motion and print get clean text. Driven by src/scripts/motion/redact.ts.
+ */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  [data-redact],
+  [data-redact-lines],
+  .redact-line {
+    position: relative;
+  }
+
+  [data-redact]::after,
+  [data-redact-lines]::after,
+  .redact-line::after {
+    content: '';
+    position: absolute;
+    inset: 0.06em -0.08em;
+    background: var(--color-redact);
+    transform-origin: 100% 50%;
+    transform: scaleX(var(--redact, 1));
+    pointer-events: none;
+    /* Failsafe: if the motion core never boots, clear the bars anyway. */
+    animation: redact-failsafe var(--dur-long) var(--ease-in-out) 2.5s forwards;
+  }
+
+  html[data-motion='ready'] :is([data-redact], [data-redact-lines], .redact-line)::after {
+    animation: none;
+  }
+
+  html:is([data-motion='failed'], [data-motion='late'], [data-motion='reduced'])
+    :is([data-redact], [data-redact-lines], .redact-line)::after {
+    content: none;
+  }
+}
+
+/*
+ * Intro (dossier page 01): the file number types in and the stamp lands. Static and
+ * visible without JS or with reduced motion; same failsafe contract as the bars.
+ * Driven by src/scripts/motion/scenes/intro.ts, which sets html[data-intro='done'].
+ */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  html:not([data-intro='done']) [data-intro='type'] {
+    display: inline-block;
+    clip-path: inset(0 100% 0 0);
+    animation: intro-failsafe-clip 0s linear 2.5s forwards;
+  }
+
+  html:not([data-intro='done']) [data-intro='stamp'] {
+    opacity: 0;
+    animation: intro-failsafe-fade 0s linear 2.5s forwards;
+  }
+
+  html[data-motion='ready'] [data-intro] {
+    animation: none;
+  }
+
+  html:is([data-motion='failed'], [data-motion='late']) [data-intro] {
+    clip-path: none;
+    opacity: 1;
+    animation: none;
+  }
+}
+
+@keyframes intro-failsafe-clip {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes intro-failsafe-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes redact-failsafe {
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@media print {
+  [data-redact]::after,
+  [data-redact-lines]::after,
+  .redact-line::after {
+    content: none;
+  }
+}
+
+/* Cross-document view transitions (MPA, no client router): a short settle between pages. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root) {
+    animation: var(--dur-short) var(--ease-in) both page-out;
+  }
+
+  ::view-transition-new(root) {
+    animation: var(--dur-long) var(--ease-out) both page-in;
+  }
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* Reduced motion: every animation and transition ends at once. */
+@media (prefers-reduced-motion: reduce) {
+  *:not(.keep-motion),
+  *:not(.keep-motion)::before,
+  *:not(.keep-motion)::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

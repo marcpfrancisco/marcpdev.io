@@ -1,0 +1,26 @@
+---
+/**
+ * A permanent redaction: information that genuinely stays withheld (employer systems, client
+ * names). Unlike the scroll bars it never wipes, so the page's end state still shows the
+ * dossier's subject matter. Screen readers hear what is withheld, never the bar itself.
+ */
+interface Props {
+  /** What is withheld, read to assistive tech, e.g. "employer systems withheld". */
+  label: string;
+  /** Bar length, sized like a struck-out word or phrase. */
+  size?: 'word' | 'phrase' | 'line';
+}
+
+const { label, size = 'phrase' } = Astro.props;
+
+// Literal class strings so Tailwind can see them (no inline styles: strict CSP).
+const WIDTH = { word: 'w-[6ch]', phrase: 'w-[12ch]', line: 'w-[20ch]' } as const;
+---
+
+<span class="inline-flex items-baseline">
+  <span
+    aria-hidden="true"
+    class:list={['inline-block h-[0.9em] translate-y-[0.12em] bg-redact', WIDTH[size]]}
+  ></span>
+  <span class="visually-hidden">{label}</span>
+</span>

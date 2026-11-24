@@ -1,0 +1,144 @@
+---
+/**
+ * Exhibit B: operations history along a routing trail.
+ * Static (no JS, reduced motion): a hairline spine with square nodes.
+ * With motion: scenes/timeline.ts replaces the spine with an SVG route drawn through every
+ * node, scrubbed by scroll, with a cobalt dot travelling it.
+ */
+import { person } from '../../data/site';
+import { getExperience } from '../../lib/content';
+import { fileMonth } from '../../lib/format';
+import Section from './Section.astro';
+
+interface Props {
+  page: number;
+  pages: number;
+}
+
+const { page, pages } = Astro.props;
+const roles = await getExperience();
+const mainRoles = roles.filter((role) => role.data.kind === 'main');
+const earlierRoles = roles.filter((role) => role.data.kind === 'earlier');
+
+/** Risk, action, result: only the fields a source states. /about carries the full record. */
+const BRIEF_FIELDS = [
+  ['risk', 'Risk'],
+  ['action', 'Action'],
+  ['result', 'Result'],
+] as const;
+
+const monthLabel = fileMonth;
+---
+
+<Section
+  id="exhibit-b"
+  labelledBy="exhibit-b-title"
+  tone="raised"
+  letter="B"
+  name="Operations history"
+  page={page}
+  pages={pages}
+  scene="timeline"
+  contentClass="lg:gap-3xl"
+>
+  <h2 id="exhibit-b-title" class="text-display-s tracking-display text-ink">
+    <span data-redact class="inline-block">
+      {person.historyHeadline}
+    </span>
+  </h2>
+
+  <div data-route-root class="relative">
+    <svg
+      data-route
+      aria-hidden="true"
+      focusable="false"
+      class="pointer-events-none absolute top-0 left-0 hidden overflow-visible group-data-[route]:block"
+    >
+      <path
+        data-route-path
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        class="text-accent"
+        vector-effect="non-scaling-stroke"
+      ></path>
+    </svg>
+    <span
+      data-route-dot
+      aria-hidden="true"
+      class="pointer-events-none absolute top-0 left-0 hidden size-3 rounded-full bg-accent group-data-[route=on]:block"
+    ></span>
+
+    <ol class="relative grid gap-2xl before:absolute md:gap-3xl lg:gap-3xl before:inset-y-0 before:left-3 before:w-px before:bg-rule group-data-[route]:before:hidden md:before:left-5">
+      {mainRoles.map((role) => (
+        <li class="grid grid-cols-[1.5rem_minmax(0,1fr)] gap-x-md md:grid-cols-[2.5rem_minmax(0,1fr)] md:gap-x-lg lg:min-h-[28rem]">
+          <span class="relative" aria-hidden="true">
+            <span
+              data-route-node
+              class="absolute top-[0.45em] left-1/2 size-2.5 -translate-x-1/2 border border-rule-strong bg-paper transition-colors duration-(--dur-short) ease-out [&.is-reached]:border-accent [&.is-reached]:bg-accent"
+            />
+          </span>
+          <article class="grid gap-md md:grid-cols-[9rem_minmax(0,1fr)] md:gap-lg">
+            <p class="file-mono text-muted md:pt-1">
+              <time datetime={role.data.start}>{monthLabel(role.data.start)}</time>
+              <span> to </span>
+              {role.data.end ? (
+                <time datetime={role.data.end}>{monthLabel(role.data.end)}</time>
+              ) : (
+                <span class="text-ink-2">present</span>
+              )}
+            </p>
+            <div class="grid gap-md">
+              <div class="grid gap-2xs">
+                <h3 class="font-display text-title text-ink">{role.data.company}</h3>
+                <p class="text-md text-ink-2">{role.data.role}</p>
+              </div>
+              {role.data.brief ? (
+                <dl class="grid max-w-[64ch] gap-sm">
+                  {BRIEF_FIELDS.map(([key, label]) => {
+                    const value = role.data.brief?.[key];
+                    return value ? (
+                      <div class="grid gap-2xs sm:grid-cols-[5rem_minmax(0,1fr)] sm:gap-md">
+                        <dt class="file-mono text-muted sm:pt-0.5">{label}</dt>
+                        <dd class="text-md text-ink-2">{value}</dd>
+                      </div>
+                    ) : null;
+                  })}
+                </dl>
+              ) : (
+                <p class="max-w-[62ch] text-md text-ink-2">{role.data.highlights[0]}</p>
+              )}
+            </div>
+          </article>
+        </li>
+      ))}
+
+      {earlierRoles.length > 0 && (
+        <li class="grid grid-cols-[1.5rem_minmax(0,1fr)] gap-x-md md:grid-cols-[2.5rem_minmax(0,1fr)] md:gap-x-lg lg:min-h-[28rem]">
+          <span class="relative" aria-hidden="true">
+            <span
+              data-route-node
+              class="absolute top-[0.45em] left-1/2 size-2.5 -translate-x-1/2 border border-rule-strong bg-paper transition-colors duration-(--dur-short) ease-out [&.is-reached]:border-accent [&.is-reached]:bg-accent"
+            />
+          </span>
+          <div class="grid gap-md md:grid-cols-[9rem_minmax(0,1fr)] md:gap-lg">
+            <h3 class="file-mono text-muted md:pt-1">Earlier</h3>
+            <ul class="grid gap-xs">
+              {earlierRoles.map((role) => (
+                <li class="text-md text-ink-2">
+                  {role.data.role}
+                  <span class="text-muted">
+                    , {role.data.company},{' '}
+                    <time datetime={role.data.start} class="whitespace-nowrap">
+                      {monthLabel(role.data.start)}
+                    </time>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </li>
+      )}
+    </ol>
+  </div>
+</Section>

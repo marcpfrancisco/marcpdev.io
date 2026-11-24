@@ -1,0 +1,155 @@
+/*
+ * Design tokens. The ONLY file allowed to hold literal colours, font stacks or raw scales.
+ * Everything in @theme also becomes a Tailwind utility (bg-paper, text-ink, font-display,
+ * p-md, gap-xl, text-display, ease-out, duration-short ...).
+ *
+ * Three-colour system (Marc's choice, revised 2026-11-24):
+ *   primary       soft black (hue 286, never #000): the page ground and its bands
+ *   complementary warm bone (hue 87): type, rules, and real paper objects only
+ *   accent        cobalt blue (hue 266): stamps, route, actions, the contact band
+ * Contrast (WCAG): bone on black 13.7-15.6:1, muted on black 6.1-7:1, cobalt on black
+ * 4.6-5.2:1, black on cobalt 5.2:1, black on bone 15.6:1, cobalt-deep on bone 6:1.
+ * Never bone text on cobalt (3:1) or cobalt text on bone (3:1).
+ */
+
+@theme {
+  /* Wipe Tailwind's defaults so no literal palette or stack can be used by accident. */
+  --color-*: initial;
+  --font-*: initial;
+
+  /* Primary: soft black. paper = page ground, paper-2 = raised band, paper-3 = hover surface. */
+  --color-paper: oklch(16% 0.004 286);
+  --color-paper-2: oklch(19.3% 0.006 286);
+  --color-paper-3: oklch(22.9% 0.01 286);
+  --color-rule: oklch(29.6% 0.013 286);
+  --color-rule-strong: oklch(39.4% 0.017 286);
+
+  /* Complementary: bone. Text from loudest to quietest. */
+  --color-ink: oklch(92.6% 0.023 87);
+  --color-ink-2: oklch(83.4% 0.023 87);
+  --color-muted: oklch(69% 0.017 286);
+
+  /* Accent: cobalt. accent-ink is the text colour on a cobalt fill (black). */
+  --color-accent: oklch(62.4% 0.202 266);
+  --color-accent-ink: oklch(16% 0.004 286);
+  /* Cobalt that reads on bone paper (certificates, print tags). */
+  --color-accent-deep: oklch(46.4% 0.203 267);
+  --color-focus: oklch(62.4% 0.202 266);
+
+  /* Real paper objects (certificates, print frames): bone sheet, black ink. */
+  --color-sheet: oklch(92.6% 0.023 87);
+  --color-sheet-ink: oklch(16% 0.004 286);
+  --color-sheet-muted: oklch(48% 0.017 286);
+
+  /* Redaction bar: bone, so bars read as blacked-out lines inverted on black. */
+  --color-redact: oklch(92.6% 0.023 87);
+
+  --color-error: oklch(68% 0.17 27);
+  --color-success: oklch(72% 0.13 150);
+
+  /* Faces. Display: high-contrast serif. Body: Poppins (Marc's request). Mono: dossier material only
+     (file numbers, dates, codes, figures). */
+  --font-display: 'Libre Bodoni Variable', 'Libre Bodoni', ui-serif, Georgia, serif;
+  --font-body: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, monospace;
+
+  /* Type scale. Body 16px; display sized with the screen, held from 1440 up. */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.45;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.5;
+  --text-md: 1rem;
+  --text-md--line-height: 1.6;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.5;
+  --text-lead: clamp(1.125rem, 0.35vw + 1rem, 1.375rem);
+  --text-lead--line-height: 1.5;
+  --text-title: clamp(1.375rem, 0.75vw + 1rem, 1.75rem);
+  --text-title--line-height: 1.2;
+  --text-section: clamp(2.25rem, 2.5vw + 1.25rem, 3.75rem);
+  --text-section--line-height: 1.05;
+  --text-display-s: clamp(2.5rem, 4vw + 0.75rem, 4.25rem);
+  --text-display-s--line-height: 1.02;
+  --text-display: clamp(3rem, 6vw + 0.5rem, 6rem);
+  --text-display--line-height: 0.95;
+
+  --tracking-display: -0.02em;
+  --tracking-section: -0.015em;
+
+  /* Spacing scale (named). Tailwind's numeric scale stays available on the 4px grid. */
+  --spacing-3xs: 2px;
+  --spacing-2xs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 40px;
+  --spacing-2xl: 64px;
+  --spacing-3xl: 96px;
+  --spacing-4xl: 144px;
+
+  /* Measures and page width. */
+  --container-page: 1440px;
+  --container-prose: 68ch;
+
+  /* Radii: square document geometry. */
+  --radius-none: 0;
+  --radius-xs: 2px;
+  --radius-card: 4px;
+
+  /* Motion. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-scan: cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+/* Non-utility tokens: layout rhythm and z levels, read with var(). */
+:root {
+  --gutter: 64px;
+  --gap-columns: 32px;
+  --section-gap-s: 120px;
+  --section-gap: 144px;
+  --section-gap-l: 176px;
+  /* Block padding of every full-bleed section band. */
+  --section-pad: 112px;
+  --header-h: 64px;
+  --rule-hair: 1px;
+
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+
+  --z-base: 1;
+  --z-raised: 10;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-sticky-nav: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+
+  color-scheme: dark;
+}
+
+@media (max-width: 60rem) {
+  :root {
+    --gutter: 24px;
+    --section-gap-s: 80px;
+    --section-gap: 96px;
+    --section-gap-l: 120px;
+    --section-pad: 72px;
+    --header-h: 56px;
+  }
+}
+
+@media (max-width: 40rem) {
+  :root {
+    --gutter: 16px;
+    --gap-columns: 16px;
+    --section-gap-s: 56px;
+    --section-gap: 72px;
+    --section-gap-l: 96px;
+    --section-pad: 56px;
+  }
+}

@@ -1,0 +1,44 @@
+---
+/**
+ * /projects: the full evidence index. Every project on file, in register order.
+ * No stack filter: ten entries read faster as one list than behind controls.
+ */
+import EvidenceRow from '../../components/dossier/EvidenceRow.astro';
+import FileStrip from '../../components/dossier/FileStrip.astro';
+import Section from '../../components/dossier/Section.astro';
+import { person } from '../../data/site';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getProjects } from '../../lib/content';
+
+const projects = await getProjects();
+const reviewed = new Date();
+const live = projects.filter((project) => project.data.state === 'live').length;
+---
+
+<BaseLayout
+  title="Evidence index"
+  description={`Every project on ${person.name}'s file: ${String(projects.length)} entries, from application security work to full-stack builds.`}
+>
+  <FileStrip fileNo={person.fileNo} reviewed={reviewed} section="Evidence index" />
+
+  <Section id="index" labelledBy="index-title" tone="base" letter="C" name="All evidence">
+    <div class="grid gap-lg xl:grid-cols-9 xl:items-end xl:gap-(--gap-columns)">
+      <h1 id="index-title" class="text-display-s tracking-display text-ink xl:col-span-5">
+        <span data-redact class="inline-block">
+          Evidence index.
+        </span>
+      </h1>
+      <p class="max-w-[44ch] text-lead text-ink-2 xl:col-span-4">
+        {projects.length} files.
+        {live > 0 && ` ${String(live)} run as live demos;`} the rest link to their source, except
+        employer work, which stays private.
+      </p>
+    </div>
+
+    <ol class="grid border-t border-rule-strong">
+      {projects.map((project) => (
+        <EvidenceRow project={project} />
+      ))}
+    </ol>
+  </Section>
+</BaseLayout>

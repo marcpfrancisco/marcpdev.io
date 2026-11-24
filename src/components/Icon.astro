@@ -1,0 +1,28 @@
+---
+/**
+ * Inline SVG icon from the build-time registry (src/lib/icons.ts).
+ * Decorative by default (aria-hidden). Pass `label` when the icon is the only
+ * content of a control, so it gets an accessible name.
+ */
+import { icons, type IconName } from '../lib/icons';
+
+interface Props {
+  name: IconName;
+  label?: string;
+  class?: string;
+}
+
+const { name, label, class: className } = Astro.props;
+const glyph = icons[name];
+---
+
+<svg
+  viewBox={glyph.viewBox}
+  class:list={['inline-block h-[1em] w-auto shrink-0 fill-current', className]}
+  aria-hidden={label ? undefined : 'true'}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  focusable="false"
+>
+  <path d={glyph.path}></path>
+</svg>

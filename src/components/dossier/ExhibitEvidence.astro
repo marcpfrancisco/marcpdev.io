@@ -1,0 +1,73 @@
+---
+/**
+ * Exhibit C: evidence. Live demos first as evidence prints (real objects: proof the product
+ * runs), then the featured register as file-index lines linking to each case file.
+ */
+import { evidenceCode, getProjects } from '../../lib/content';
+import { placeholder } from '../../lib/placeholder';
+import EvidencePrint from './EvidencePrint.astro';
+import EvidenceRow from './EvidenceRow.astro';
+import Section from './Section.astro';
+
+interface Props {
+  page: number;
+  pages: number;
+}
+
+const { page, pages } = Astro.props;
+const projects = await getProjects();
+const featured = projects.filter((project) => project.data.featured);
+const rest = projects.length - featured.length;
+const prints = featured.filter((project) => project.data.state === 'live');
+---
+
+<Section
+  id="exhibit-c"
+  labelledBy="exhibit-c-title"
+  tone="base"
+  letter="C"
+  name="Evidence"
+  page={page}
+  pages={pages}
+>
+  <h2 id="exhibit-c-title" class="text-display-s tracking-display text-ink">
+    <span data-redact class="inline-block">
+      Evidence on file.
+    </span>
+  </h2>
+
+  {prints.length > 0 && (
+    <div class="grid gap-xl pt-sm sm:grid-cols-2 sm:gap-(--gap-columns)">
+      {prints.map((project) => (
+        <EvidencePrint
+          image={placeholder(1200, 750)}
+          alt={`Placeholder for a screenshot of the ${project.data.title} live demo`}
+          code={evidenceCode(project.data.order)}
+          title={project.data.title}
+          note="live demo, screenshot placeholder"
+          href={`/projects/${project.id}`}
+        />
+      ))}
+    </div>
+  )}
+
+  <ol class="grid border-t border-rule-strong">
+    {featured.map((project) => (
+      <EvidenceRow project={project} compact />
+    ))}
+    {rest > 0 && (
+      <li class="border-b border-rule">
+        <a
+          href="/projects"
+          class="group/row grid gap-xs py-md no-underline transition-colors duration-(--dur-short) ease-out hover:bg-paper-3 active:bg-paper lg:grid-cols-[6rem_minmax(0,1fr)_auto] lg:items-baseline lg:gap-lg lg:px-sm"
+        >
+          <span class="file-mono whitespace-nowrap text-muted transition-colors duration-(--dur-short) group-hover/row:text-ink">
+            {evidenceCode(featured.length)} to {evidenceCode(projects.length - 1).slice(3)}
+          </span>
+          <span class="font-display text-title text-ink">Open the full index</span>
+          <span class="text-sm text-ink-2 lg:text-end">{rest} more files</span>
+        </a>
+      </li>
+    )}
+  </ol>
+</Section>

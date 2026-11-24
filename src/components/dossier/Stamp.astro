@@ -1,0 +1,28 @@
+---
+/**
+ * The dossier's single signature mark: a hairline champagne stamp, set at -6deg.
+ * Static and fully visible without JS or with reduced motion; the intro scene lands it.
+ */
+import { fileDate } from '../../lib/format';
+
+interface Props {
+  date: Date;
+  class?: string;
+}
+
+const { date, class: className } = Astro.props;
+const label = fileDate(date);
+---
+
+<div
+  data-intro="stamp"
+  class:list={[
+    'inline-flex h-fit rotate-[-6deg] flex-col items-start gap-2xs border border-accent px-md py-sm text-accent',
+    className,
+  ]}
+>
+  <span class="font-display text-title leading-none">Declassified</span>
+  <time datetime={date.toISOString().slice(0, 10)} class="file-mono text-xs text-accent">
+    {label}
+  </time>
+</div>

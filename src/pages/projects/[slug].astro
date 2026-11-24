@@ -1,0 +1,184 @@
+---
+/**
+ * /projects/[slug]: one project's case file. Code, title, summary, the facts on record, the
+ * case notes when the entry has a body, and the neighbouring files.
+ * Only what the content entry states is shown: no role unless known, no empty notes section.
+ */
+import { render, type CollectionEntry } from 'astro:content';
+import Icon from '../../components/Icon.astro';
+import EvidencePrint from '../../components/dossier/EvidencePrint.astro';
+import Redacted from '../../components/dossier/Redacted.astro';
+import Section from '../../components/dossier/Section.astro';
+import FileStrip from '../../components/dossier/FileStrip.astro';
+import ButtonLink from '../../components/ui/ButtonLink.astro';
+import { person } from '../../data/site';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { evidenceCode, getProjects, PROJECT_STATE_LABEL } from '../../lib/content';
+import { placeholder } from '../../lib/placeholder';
+
+export async function getStaticPaths(): Promise<
+  {
+    params: { slug: string };
+    props: {
+      project: CollectionEntry<'projects'>;
+      previous?: CollectionEntry<'projects'>;
+      next?: CollectionEntry<'projects'>;
+    };
+  }[]
+> {
+  const projects = await getProjects();
+  return projects.map((project, index) => ({
+    params: { slug: project.id },
+    props: { project, previous: projects[index - 1], next: projects[index + 1] },
+  }));
+}
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  previous?: CollectionEntry<'projects'>;
+  next?: CollectionEntry<'projects'>;
+}
+
+const { project, previous, next } = Astro.props;
+const { data } = project;
+const code = evidenceCode(data.order);
+const hasNotes = Boolean(project.body?.trim());
+const { Content } = await render(project);
+const reviewed = new Date();
+/** Live demos show the product running; a labelled placeholder until the screenshot exists. */
+const shot = data.state === 'live' ? placeholder(1600, 1000) : null;
+
+const primary = data.demo
+  ? { href: data.demo, label: 'Open the live demo' }
+  : data.repo
+    ? { href: data.repo, label: 'Read the source' }
+    : null;
+const secondary = data.demo && data.repo ? { href: data.repo, label: 'Read the source' } : null;
+---
+
+<BaseLayout title={`${code} ${data.title}`} description={data.summary}>
+  <FileStrip fileNo={person.fileNo} reviewed={reviewed} section={`Evidence ${code}`} />
+
+  <article aria-labelledby="project-title">
+    <Section id="case" labelledBy="project-title" tone="base" letter={code} name="Case file">
+      <div class="grid gap-xl xl:grid-cols-9 xl:gap-(--gap-columns)">
+        <div class="grid content-start gap-lg xl:col-span-5">
+          <h1 id="project-title" class="text-display-s tracking-display text-ink">
+            <span data-redact class="inline-block">
+              {data.title}
+            </span>
+          </h1>
+          <p class="max-w-[48ch] text-lead text-ink-2">{data.summary}</p>
+          {primary && (
+            <div class="flex flex-wrap gap-md">
+              <ButtonLink href={primary.href} variant="primary" target="_blank">
+                {primary.label}
+                <Icon name="external" class="text-xs" />
+                <span class="visually-hidden">(opens in a new tab)</span>
+              </ButtonLink>
+              {secondary && (
+                <ButtonLink href={secondary.href} target="_blank">
+                  {secondary.label}
+                  <Icon name="external" class="text-xs" />
+                  <span class="visually-hidden">(opens in a new tab)</span>
+                </ButtonLink>
+              )}
+            </div>
+          )}
+          {data.state === 'private' && (
+            <p class="max-w-[48ch] text-md text-muted">
+              Employer work: no source or demo is public, and no internal detail is shown.
+            </p>
+          )}
+        </div>
+
+        <dl class="grid content-start gap-md border-t-2 border-accent pt-lg xl:col-span-4">
+          <div class="grid grid-cols-[5rem_minmax(0,1fr)] gap-md">
+            <dt class="file-mono text-muted">Year</dt>
+            <dd class="num text-md text-ink">{data.year}</dd>
+          </div>
+          <div class="grid grid-cols-[5rem_minmax(0,1fr)] gap-md">
+            <dt class="file-mono text-muted">State</dt>
+            <dd class="text-md text-ink">{PROJECT_STATE_LABEL[data.state]}</dd>
+          </div>
+          {data.role && (
+            <div class="grid grid-cols-[5rem_minmax(0,1fr)] gap-md">
+              <dt class="file-mono text-muted">Role</dt>
+              <dd class="text-md text-ink">{data.role}</dd>
+            </div>
+          )}
+          <div class="grid grid-cols-[5rem_minmax(0,1fr)] gap-md">
+            <dt class="file-mono text-muted">Stack</dt>
+            <dd class="text-md text-ink">{data.stack.join(', ')}</dd>
+          </div>
+          {data.state === 'private' && (
+            <div class="grid grid-cols-[5rem_minmax(0,1fr)] gap-md">
+              <dt class="file-mono text-muted">Systems</dt>
+              <dd class="text-md text-ink">
+                <Redacted label="employer systems withheld" size="line" />
+              </dd>
+            </div>
+          )}
+        </dl>
+      </div>
+
+      {shot && (
+        <EvidencePrint
+          image={shot}
+          alt={`Placeholder for a screenshot of the ${data.title} live demo`}
+          code={code}
+          title="Live demo"
+          note="screenshot placeholder"
+        />
+      )}
+    </Section>
+
+    {hasNotes && (
+      <Section id="notes" labelledBy="notes-title" tone="raised" letter={code} name="Case notes">
+        <h2 id="notes-title" class="visually-hidden">
+          Case notes
+        </h2>
+        <div class="prose-file">
+          <Content />
+        </div>
+      </Section>
+    )}
+
+    <nav aria-label="Other files" class="border-t border-rule bg-paper">
+      <div class="container-page grid gap-md py-xl sm:grid-cols-3">
+        <div>
+          {previous && (
+            <a
+              href={`/projects/${previous.id}`}
+              class="grid min-h-11 gap-2xs text-ink no-underline transition-colors duration-(--dur-short) hover:text-accent active:text-ink-2"
+            >
+              <span class="file-mono text-muted">
+                Previous, {evidenceCode(previous.data.order)}
+              </span>
+              <span class="font-display text-title">{previous.data.title}</span>
+            </a>
+          )}
+        </div>
+        <div class="sm:text-center">
+          <a
+            href="/projects"
+            class="inline-flex min-h-11 items-center text-md text-ink-2 underline decoration-rule-strong underline-offset-4 transition-colors duration-(--dur-short) hover:text-ink hover:decoration-accent active:text-accent"
+          >
+            All evidence
+          </a>
+        </div>
+        <div class="sm:text-end">
+          {next && (
+            <a
+              href={`/projects/${next.id}`}
+              class="grid min-h-11 gap-2xs text-ink no-underline transition-colors duration-(--dur-short) hover:text-accent active:text-ink-2"
+            >
+              <span class="file-mono text-muted">Next, {evidenceCode(next.data.order)}</span>
+              <span class="font-display text-title">{next.data.title}</span>
+            </a>
+          )}
+        </div>
+      </div>
+    </nav>
+  </article>
+</BaseLayout>

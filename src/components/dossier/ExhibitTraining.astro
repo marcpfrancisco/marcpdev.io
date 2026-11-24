@@ -1,0 +1,120 @@
+---
+/**
+ * Exhibit D: field training. TryHackMe paths as certificates (real paper objects, details
+ * transcribed from the issued PDFs), then events and courses as a plain list with honest
+ * states: complete, in progress, or attended (never shown as a certification).
+ */
+import { socials, training, type TrainingState } from '../../data/site';
+import { getPublic } from '../../lib/content';
+import { fileDate } from '../../lib/format';
+import CertificateCard from './CertificateCard.astro';
+import Section from './Section.astro';
+
+interface Props {
+  page: number;
+  pages: number;
+}
+
+const { page, pages } = Astro.props;
+
+const STATE_LABEL: Record<TrainingState, string> = {
+  complete: 'Complete',
+  'in-progress': 'In progress',
+  attended: 'Attended',
+};
+
+const paths = training.filter((item) => item.provider === 'TryHackMe' && item.year === undefined);
+const other = training.filter((item) => !paths.includes(item));
+const completePaths = paths.filter((item) => item.state === 'complete').length;
+const openPaths = paths.length - completePaths;
+
+const thm = socials.find((social) => social.icon === 'tryhackme');
+const writeups = (await getPublic('writeups'))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+const words = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six'] as const;
+const heading = `${words[completePaths] ?? String(completePaths)} paths complete, ${(words[openPaths] ?? String(openPaths)).toLowerCase()} open.`;
+---
+
+<Section
+  id="exhibit-d"
+  labelledBy="exhibit-d-title"
+  tone="raised"
+  letter="D"
+  name="Field training"
+  page={page}
+  pages={pages}
+>
+  <h2 id="exhibit-d-title" class="text-display-s tracking-display text-ink">
+    <span data-redact class="inline-block">
+      {heading}
+    </span>
+  </h2>
+
+  <div class="grid gap-md">
+    <div class="flex items-baseline justify-between gap-lg">
+      <h3 class="file-mono font-normal text-muted">TryHackMe learning paths</h3>
+      {thm && (
+        <a
+          href={thm.href}
+          rel="noopener noreferrer"
+          target="_blank"
+          class="file-mono inline-flex min-h-11 items-center text-ink-2 no-underline transition-colors duration-(--dur-short) hover:text-ink active:text-accent"
+        >
+          Profile, {thm.handle}
+          <span class="visually-hidden">(opens in a new tab)</span>
+        </a>
+      )}
+    </div>
+    <ul class="grid gap-md sm:grid-cols-2 xl:grid-cols-4">
+      {paths.map((item) => (
+        <li class="grid">
+          <CertificateCard item={item} />
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="grid gap-md">
+    <h3 class="file-mono font-normal text-muted">Events and courses</h3>
+    <ul class="grid border-t border-rule">
+      {other.map((item) => (
+        <li class="grid gap-2xs border-b border-rule py-md sm:flex sm:items-baseline sm:justify-between sm:gap-lg">
+          <span class="text-lg text-ink">
+            {item.name}
+            <span class="text-muted">, {item.provider}</span>
+          </span>
+          <span class="shrink-0 text-sm text-ink-2">
+            {STATE_LABEL[item.state]}
+            {item.year && <span class="num ms-xs text-muted">{item.year}</span>}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  {writeups.length > 0 && (
+    <div class="grid gap-md">
+      <h3 class="file-mono font-normal text-muted">Latest writeups</h3>
+      <ul class="grid border-t border-rule">
+        {writeups.map((writeup) => (
+          <li class="border-b border-rule">
+            <a
+              href={`/anvil/writeups/${writeup.id}`}
+              class="flex items-baseline justify-between gap-lg py-md text-ink no-underline transition-colors duration-(--dur-short) hover:text-accent active:text-ink-2"
+            >
+              <span class="text-lg">{writeup.data.title}</span>
+              <time
+                class="file-mono shrink-0 text-muted"
+                datetime={writeup.data.date.toISOString()}
+              >
+                {fileDate(writeup.data.date)}
+              </time>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</Section>

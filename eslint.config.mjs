@@ -30,18 +30,13 @@ export default defineConfig(
     },
   },
 
-  // Airbnb (base + React) with TypeScript support.
+  // Airbnb base with TypeScript support (no React: the site ships no islands).
   js.configs.recommended,
   airbnbPlugins.stylistic,
   airbnbPlugins.importX,
   airbnbPlugins.typescriptEslint,
   ...airbnb.base.recommended,
   ...airbnb.base.typescript,
-  airbnbPlugins.react,
-  airbnbPlugins.reactA11y,
-  airbnbPlugins.reactHooks,
-  ...airbnb.react.recommended,
-  ...airbnb.react.typescript,
 
   // typescript-eslint strict, type-aware, scoped to TS sources.
   ...tseslint.configs.strictTypeChecked.map((config) => ({ ...config, files: tsFiles })),
@@ -73,8 +68,6 @@ export default defineConfig(
       // Astro resolves virtual modules (astro:content, astro:assets) at build time.
       'import-x/no-unresolved': ['error', { ignore: ['^astro:'] }],
       'import-x/extensions': 'off',
-      'react/react-in-jsx-scope': 'off',
-      'react/require-default-props': 'off',
     },
   },
   {

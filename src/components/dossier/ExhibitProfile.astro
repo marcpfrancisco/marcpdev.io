@@ -1,0 +1,53 @@
+---
+/**
+ * Exhibit A: the subject's statement and three disciplines.
+ * Application security leads (the role he is hiring for): wider column and the cobalt rule; same
+ * heading size as the others so the section keeps one head.
+ * The statement head is the page's one scrubbed display element; the body declassifies by line.
+ */
+import { person } from '../../data/site';
+import Section from './Section.astro';
+
+interface Props {
+  page: number;
+  pages: number;
+}
+
+const { page, pages } = Astro.props;
+const [lead, ...rest] = person.pillars;
+---
+
+<Section
+  id="exhibit-a"
+  labelledBy="exhibit-a-title"
+  tone="base"
+  letter="A"
+  name="Profile"
+  page={page}
+  pages={pages}
+  contentClass="lg:gap-3xl"
+>
+  <div class="grid gap-lg xl:grid-cols-9 xl:items-end xl:gap-(--gap-columns)">
+    <h2 id="exhibit-a-title" class="text-display-s tracking-display text-ink xl:col-span-5">
+      <span data-redact="scrub" class="inline-block">
+        {person.headline}
+      </span>
+    </h2>
+    <p data-redact-lines class="max-w-[48ch] text-lead text-ink-2 xl:col-span-4">
+      {person.profile}
+    </p>
+  </div>
+
+  <dl class="grid gap-xl md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)] md:gap-(--gap-columns)">
+    <div class="grid content-start gap-sm border-t-2 border-accent pt-lg">
+      <dt class="font-display text-title text-ink">{lead.name}</dt>
+      <dd class="max-w-[36ch] text-md text-ink-2">{lead.body}</dd>
+    </div>
+    {rest.map((pillar) => (
+      <div class="grid content-start gap-sm border-t border-rule-strong pt-lg">
+        <dt class="font-display text-title text-ink">{pillar.name}</dt>
+        <dd class="text-md text-ink-2">{pillar.body}</dd>
+      </div>
+    ))}
+  </dl>
+</Section>

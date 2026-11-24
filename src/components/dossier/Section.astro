@@ -1,0 +1,82 @@
+---
+/**
+ * One dossier section: a full-bleed band on one 12-column grid.
+ *  - Rail (cols 1-3): the exhibit's letter in cobalt, its name and folio. Sticky on desktop so
+ *    the reader always knows which exhibit they are in; one head row on phones.
+ *  - Content (cols 4-12): everything else. No section offsets or narrows itself, so every
+ *    edge on the page aligns to the same two lines.
+ * Tones: base / raised black alternate so each exhibit reads as its own file page.
+ */
+import { pad2 } from '../../lib/format';
+
+interface Props {
+  id: string;
+  labelledBy: string;
+  tone?: 'base' | 'raised';
+  letter?: string;
+  name?: string;
+  page?: number;
+  pages?: number;
+  /** Motion scene hook (e.g. "timeline"); also makes the band a Tailwind `group`. */
+  scene?: string;
+  contentClass?: string;
+}
+
+const {
+  id,
+  labelledBy,
+  tone = 'base',
+  letter,
+  name,
+  page,
+  pages,
+  scene,
+  contentClass,
+} = Astro.props;
+
+const folio =
+  page !== undefined && pages !== undefined ? `p. ${pad2(page)} of ${pad2(pages)}` : null;
+const hasRail = Boolean(letter && name);
+---
+
+<section
+  id={id}
+  tabindex="-1"
+  aria-labelledby={labelledBy}
+  data-scene={scene}
+  data-tone={tone}
+  class:list={[
+    'group border-t py-(--section-pad) outline-none',
+    tone === 'base' && 'border-rule bg-paper [--band:var(--color-paper)]',
+    tone === 'raised' && 'border-rule bg-paper-2 [--band:var(--color-paper-2)]',
+  ]}
+>
+  <div class="container-page grid gap-xl lg:grid-cols-12 lg:gap-(--gap-columns)">
+    {hasRail && (
+      <div class="lg:col-span-3">
+        <div class="flex items-baseline gap-md border-b border-rule pb-sm lg:sticky lg:top-[calc(var(--header-h)+var(--spacing-lg))] lg:flex-col lg:items-start lg:gap-xs lg:border-b-0 lg:pb-0">
+          <span
+            aria-hidden="true"
+            class:list={['font-display text-section leading-none', 'text-accent']}
+          >
+            {letter}
+          </span>
+          <p class="file-mono flex flex-wrap gap-x-sm text-muted lg:flex-col">
+            <span class="whitespace-nowrap">Exhibit {letter}</span>
+            <span class="whitespace-nowrap text-ink-2">{name}</span>
+          </p>
+          {folio && <p class="file-mono ms-auto whitespace-nowrap text-muted lg:ms-0">{folio}</p>}
+        </div>
+      </div>
+    )}
+    <div
+      class:list={[
+        'grid min-w-0 content-start gap-xl',
+        hasRail ? 'lg:col-span-9' : 'lg:col-span-12',
+        contentClass,
+      ]}
+    >
+      <slot />
+    </div>
+  </div>
+</section>
