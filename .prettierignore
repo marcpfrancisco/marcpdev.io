@@ -1,0 +1,7 @@
+dist
+.astro
+node_modules
+graphify-out
+package-lock.json
+ai-automation/**/*.json
+.claude

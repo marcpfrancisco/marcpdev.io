@@ -1,0 +1,47 @@
+{
+  "astro.config.mjs": {
+    "mtime": 1795434617.6498642,
+    "ast_hash": "dfb1418da9d0f631f828fc44a483fabc",
+    "semantic_hash": "dfb1418da9d0f631f828fc44a483fabc"
+  },
+  "package.json": {
+    "mtime": 1795434664.008903,
+    "ast_hash": "117f69fe028fc58cfb514b287caf091c",
+    "semantic_hash": "117f69fe028fc58cfb514b287caf091c"
+  },
+  "src/pages/index.astro": {
+    "mtime": 1795434514.9429214,
+    "ast_hash": "04397028bc7f165d5e17c17875b993db",
+    "semantic_hash": "04397028bc7f165d5e17c17875b993db"
+  },
+  "tsconfig.json": {
+    "mtime": 1795434601.021459,
+    "ast_hash": "435fd597d730817e9056f006911084dd",
+    "semantic_hash": "435fd597d730817e9056f006911084dd"
+  },
+  "AGENTS.md": {
+    "mtime": 1795434514.9384093,
+    "ast_hash": "4d944a80d98bf8891d5b10081a86d3e1",
+    "semantic_hash": "4d944a80d98bf8891d5b10081a86d3e1"
+  },
+  "CLAUDE.md": {
+    "mtime": 1795434711.2539637,
+    "ast_hash": "dae4cc1db29e817558f2e38fe15fd2d5",
+    "semantic_hash": "dae4cc1db29e817558f2e38fe15fd2d5"
+  },
+  "PROGRESS.md": {
+    "mtime": 1795434778.0766602,
+    "ast_hash": "a668d55ddd67b9e9ce9e031dcc1f535d",
+    "semantic_hash": "a668d55ddd67b9e9ce9e031dcc1f535d"
+  },
+  "README.md": {
+    "mtime": 1795434514.9409168,
+    "ast_hash": "2b1930198ce302fcdf2d29f674dbfb99",
+    "semantic_hash": "2b1930198ce302fcdf2d29f674dbfb99"
+  },
+  "public/favicon.svg": {
+    "mtime": 1795434514.9394104,
+    "ast_hash": "8c13f40658976ea1dfb8ba37a8be0e8d",
+    "semantic_hash": "8c13f40658976ea1dfb8ba37a8be0e8d"
+  }
+}
